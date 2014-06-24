@@ -1,13 +1,32 @@
 #include <iostream>
 #include <stdlib.h>
+#include <unistd.h>
 #include <minepeonuiupdate.h>
+#include <archupdate.h>
+#include <minepeonconfigupdate.h>
+#include<fstream>
 
 using namespace std;
 char yourch;
 int system(const char *command);
 
-int main()
-{
+int StartUp(){
+    std::ifstream ifile("/etc/MinePeon/MinePeon.conf");
+    std::ofstream ofile;
+    if (ifile){
+    cout << "Starting Minepeon..." << endl;
+    }else{
+        cout << "Cannot file minepeon file..." << endl << "Making the file then..." << endl << "I need Root to make this file" << endl;
+        system("sudo mkdir /etc/MinePeon");
+        system("sudo touch /etc/MinePeon/MinePeon.conf");
+        ofile.open("/etc/MinePeon/MinePeon.conf");
+        ofile << ".";
+        ofile.close();
+    }
+    return 0;
+}
+
+int MinePeonMenu(){
     cout << "########################################" << endl;
     cout << "# MinePeon Console Menu (c++ version)  #" << endl;
     cout << "########################################" << endl;
@@ -30,28 +49,37 @@ int main()
     cin >> yourch;
     switch (yourch) {
     case 'a':
-        system("/usr/bin/screen -r");
+       system("/usr/bin/screen -r");
         break;
     case 'b':
         system("/usr/bin/passwd");
         break;
     case 'c':
+        cout << string(50, '\n') << endl << "Stoping miner..." << endl;
         system("/usr/bin/sudo /usr/bin/systemctl stop miner");
+        cout << "Stoping miner.. Done!" << endl;
+        sleep(1);
         break;
     case 'd':
+        cout << string(50, '\n') << endl << "Starting miner..." << endl;
         system("/usr/bin/sudo /usr/bin/systemctl start miner");
+        cout << "Starting miner.. Done!" << endl;
+        sleep(1);
         break;
     case 'e':
+        cout << string(50, '\n') << endl << "Restarting miner..." << endl;
         system("/usr/bin/sudo /usr/bin/systemctl restart miner");
+        cout << "Restarting miner.. Done!" << endl;
+        sleep(1);
         break;
     case 'f':
-                   //Own Header file
+        MinePeonUIUpdate();       //Own Header file
         break;
     case 'g':
-                   //Own Header file
+        MinePeonConfigUpdate();        //Own Header file
         break;
     case 'h':
-                   //Own Header file
+        ArchUpdate();      //Own Header file
         break;
     case 'z':
         system("/usr/bin/sudo /usr/bin/reboot");
@@ -65,9 +93,17 @@ int main()
         cout << "Try agian, press Enter to continue" << endl;
         cin.get();
         cin.ignore();
-        main();
+        MinePeonMenu();
         break;
     }
+    MinePeonMenu();
+    return 0;
+}
+
+int main()
+{
+    StartUp();
+    MinePeonMenu();
     return 0;
 }
 
